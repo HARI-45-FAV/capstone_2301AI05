@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: #7b68ee;
+  --color-primary-hover: #6755ca;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-slate-900: #0f172a;
+  --color-slate-100: #f1f5f9;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #020617; /* Very deep blue/black */
+  --foreground: #f8fafc;
+}
+
+@layer utilities {
+  .glass-panel {
+      @apply bg-white/60 dark:bg-slate-900/40 backdrop-blur-3xl border border-white/60 dark:border-white/10 shadow-2xl;
+  }
+  
+  .dark-glass {
+      @apply bg-slate-900/90 dark:bg-[#020617]/90 backdrop-blur-3xl border-r border-white/10 shadow-2xl;
+  }
+
+  .animated-gradient-bg {
+    background: linear-gradient(-45deg, #4f46e520, #ec489920, #8b5cf620, #3b82f620);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+  }
+
+  /* Custom Scrollbar for modern feel */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300/80 dark:bg-slate-700/80 rounded-full cursor-pointer; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
