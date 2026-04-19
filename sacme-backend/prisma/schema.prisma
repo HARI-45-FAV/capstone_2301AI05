@@ -1,0 +1,652 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Base User Account storing authentication credentials
+// Roles: MAIN_ADMIN, FACULTY_ADVISOR, PROFESSOR, STUDENT
+model User {
+  id             String  @id @default(uuid())
+  email          String  @unique
+  passwordHash   String? // Nullable because they start unregistered
+  role           String
+  account_status String  @default("NOT_REGISTERED") // NOT_REGISTERED, ACTIVE, DISABLED
+
+  // Security & Activation
+  activationToken     String?   @unique
+  failedLoginAttempts Int       @default(0)
+  lockoutUntil        DateTime?
+
+  // Forgot Password / OTP Flow
+  otpHash              String?
+  otpExpiresAt         DateTime?
+  otpAttempts          Int       @default(0)
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  admin          Admin?
+  facultyAdvisor FacultyAdvisor?
+  professor      Professor?
+  student        Student?
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+}
+
+// ----------------------------------------------------------------------
+// Specific Authorized Entities (Mapped to Users 1:1)
+// ----------------------------------------------------------------------
+
+// Faculty Advisor (Manages Semester data/students/courses)
+model FacultyAdvisor {
+  id         String @id @default(uuid())
+  name       String
+  facultyId  String @unique // e.g. FAC001
+  department String
+  
+  avatarUrl  String?
+  interests  String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  assignedSemesters SemesterFacultyMapping[]
+
+  updatedAt DateTime @updatedAt // Added for profile update tracking
+}
+
+// Professor (Handles Courses/Teaching/Attendance)
+model Professor {
+  id           String @id @default(uuid())
+  name         String
+  instructorId String @unique // e.g. FAC203
+  email        String @unique
+  phone        String
+  department   String
+
+  avatarUrl    String?
+  interests    String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseAssignments  CourseAssignment[]
+
+  updatedAt DateTime @updatedAt // Added for profile update tracking
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
+}
+
+// Student (Bulk imported, read-only auth to courses)
+model Student {
+  id     String @id @default(uuid())
+  name   String
+  rollNo String // e.g. 21CS101 (Duplicate allowed per update)
+  email     String?
+  phone     String?
+  avatarUrl String?
+
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+
+  semesterId String?
+  semester   Semester? @relation(fields: [semesterId], references: [id])
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
+
+  attendances Attendance[]
+  submissions Submission[]
+  grades      Grade[]
+  queries     AssignmentQuery[]
+  groupMemberships SubmissionMember[]
+  enrollments Enrollment[]
+}
+
+// Main Admin (Structure & Mapping Setup)
+model Admin {
+  id             String  @id @default(uuid())
+  name           String
+  adminId        String  @unique
+  level          String  @default("SUPER")
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tickets Ticket[]
+}
+
+// ----------------------------------------------------------------------
+// Academic & Management Models
+// ----------------------------------------------------------------------
+
+model Institute {
+  id          String  @id @default(uuid())
+  collegeName String
+  shortName   String
+  logoUrl     String?
+  address     String
+  state       String
+  city        String
+  postalCode  String
+
+  adminName      String
+  officialEmail  String
+  phone          String
+  alternatePhone String?
+
+  setupCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid())
+  name      String // e.g., "2026-27"
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("ACTIVE") // ACTIVE | ARCHIVED
+
+  semesters Semester[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Branch {
+  id             String @id @default(uuid())
+  name           String
+  code           String @unique
+  programType    String // BTECH | MTECH | DUAL
+  totalSemesters Int
+
+  semesters Semester[]
+  students  Student[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Semester {
+  id             String @id @default(uuid())
+  semesterNumber Int
+  semesterType   String // ODD | EVEN
+  season         String // AUTUMN | SPRING
+  status         String @default("UPCOMING") // UPCOMING | ACTIVE | LOCKED | COMPLETED
+
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  courses         Course[]
+  students        Student[]
+  facultyMappings SemesterFacultyMapping[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SemesterFacultyMapping {
+  id               String @id @default(uuid())
+  semesterId       String
+  facultyAdvisorId String
+
+  semester       Semester       @relation(fields: [semesterId], references: [id])
+  facultyAdvisor FacultyAdvisor @relation(fields: [facultyAdvisorId], references: [id])
+
+  @@unique([semesterId, facultyAdvisorId])
+}
+
+model Course {
+  id         String @id @default(uuid())
+  name       String
+  code       String @unique
+  credits    Float  // Changed from Int to Float
+  courseType String // THEORY | LAB
+
+  semesterId String
+  semester   Semester @relation(fields: [semesterId], references: [id])
+
+  courseAssignments  CourseAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+  deletedAt DateTime?
+
+  attendances   Attendance[]
+  assignments   Assignment[]
+  materials     CourseMaterial[]
+  announcements Announcement[]
+  grades        Grade[]
+  enrollments   Enrollment[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  studentId String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([courseId])
+  @@index([studentId])
+}
+
+model CourseAssignment {
+  id          String @id @default(uuid())
+  courseId    String
+  professorId String
+
+  course    Course    @relation(fields: [courseId], references: [id])
+  professor Professor @relation(fields: [professorId], references: [id])
+
+  @@unique([courseId, professorId])
+  @@index([courseId])
+  @@index([professorId])
+}
+
+model Ticket {
+  id          String  @id @default(uuid())
+  ticketId    String  @unique // e.g., TCKT-001
+  title       String
+  issueType   String
+  priority    String // LOW | MEDIUM | HIGH
+  description String
+  attachment  String?
+  status      String  @default("OPEN") // OPEN | IN_PROGRESS | RESOLVED | CLOSED
+
+  adminId String
+  admin   Admin  @relation(fields: [adminId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // e.g., "PASSWORD_RESET_REQUESTED", "PASSWORD_RESET_COMPLETED"
+  userId    String?
+  email     String?
+  ipAddress String?
+  details   String?
+  
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+}
+
+// ----------------------------------------------------------------------
+// Learning & Grading Workflows
+// ----------------------------------------------------------------------
+
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String
+  courseId  String
+  date      DateTime
+  status    String   // "Present" | "Absent"
+  isLocked  Boolean  @default(false)
+  lockedAt  DateTime?
+
+  student   Student  @relation(fields: [studentId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId, date])
+  @@index([courseId, date])
+  @@index([courseId, studentId])
+  @@index([studentId, courseId])
+  @@index([courseId])
+  @@index([studentId])
+}
+
+model Assignment {
+  id                     String   @id @default(uuid())
+  courseId               String
+  title                  String
+  description            String
+  dueDate                DateTime
+  maxMarks               Float?
+
+  // Extended properties for production LMS features
+  assignmentType         String?  
+  lateSubmissionDeadline DateTime?
+  weightage              Float?
+  
+  allowLateSubmission    Boolean  @default(false)
+  allowResubmission      Boolean  @default(false)
+  submissionMode         String   @default("INDIVIDUAL") // INDIVIDUAL | GROUP
+  autoCloseAfterDeadline Boolean  @default(true)
+  resultsVisible         Boolean  @default(false)
+  resultsPublishedAt     DateTime?
+  
+  // Visibility & Limits
+  isPublished            Boolean  @default(false)
+  visibleFrom            DateTime?
+  visibleUntil           DateTime?
+  maxFiles               Int      @default(5)
+
+  // Relations
+  course                 Course   @relation(fields: [courseId], references: [id])
+  submissions            Submission[]
+  files                  AssignmentFile[]
+  queries                AssignmentQuery[]
+  deadlineHistory        DeadlineHistory[]
+}
+
+model DeadlineHistory {
+  id           String     @id @default(uuid())
+  assignmentId String
+  oldDate      DateTime
+  newDate      DateTime
+  reason       String
+  updatedAt    DateTime   @default(now())
+  
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+}
+
+model AssignmentFile {
+  id           String     @id @default(uuid())
+  assignmentId String
+  fileUrl      String
+  fileName     String
+  fileType     String     // PDF, CSV, ZIP, DOCX, PNG, LINK
+  
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+}
+
+model Submission {
+  id           String   @id @default(uuid())
+  assignmentId String
+  studentId    String
+  fileUrl      String?  // Made optional because we now have SubmissionFile table
+  status       String   @default("PENDING") // PENDING | SUBMITTED | LATE | GRADED
+  version      Int      @default(1)
+  submittedAt  DateTime?
+  
+  marks        Float?
+  feedback     String?
+  isLate       Boolean  @default(false)
+  isLocked     Boolean  @default(false)
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
+
+  files        SubmissionFile[]
+  members      SubmissionMember[]
+
+  @@unique([assignmentId, studentId])
+  @@index([assignmentId])
+  @@index([studentId])
+}
+
+model SubmissionMember {
+  id             String     @id @default(uuid())
+  submissionId   String
+  studentId      String
+  
+  submission     Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  student        Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  @@unique([submissionId, studentId])
+}
+
+model SubmissionFile {
+  id           String     @id @default(uuid())
+  submissionId String
+  fileUrl      String
+  fileName     String
+  
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+model AssignmentQuery {
+  id           String     @id @default(uuid())
+  assignmentId String
+  studentId    String
+  subject      String
+  message      String
+  status       String     @default("OPEN") // OPEN | RESOLVED | REJECTED 
+  reply        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+  @@index([studentId])
+}
+
+model CourseMaterial {
+  id           String   @id @default(uuid())
+  courseId     String
+  title        String
+  description  String?
+  fileUrl      String?
+  linkUrl      String?
+  fileName     String?
+  materialType String
+  weekNumber   String
+  uploadedBy   String
+  createdAt    DateTime @default(now())
+
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  message     String
+  courseId    String
+  professorId String
+  type        String   @default("GENERAL")
+  sendEmail   Boolean  @default(false)
+  isRead      Boolean  @default(false)
+  isPinned    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  scheduledAt DateTime?
+
+  course      Course   @relation(fields: [courseId], references: [id])
+}
+
+model Grade {
+  id              String  @id @default(uuid())
+  studentId       String
+  courseId        String
+  assignmentMarks Float?
+  examMarks       Float?
+
+  student         Student @relation(fields: [studentId], references: [id])
+  course          Course  @relation(fields: [courseId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   @default("GENERAL") // ASSIGNMENT_CREATED, SUBMISSION_DONE, QUERY_RAISED, RESULT_PUBLISHED, etc.
+  title     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  linkUrl   String?
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model EmailLog {
+  id         String   @id @default(uuid())
+  studentId  String
+  courseId   String
+  alertType  String
+  sentAt     DateTime @default(now())
+}
+
+// ----------------------------------------------------------------------
+// Master Quiz Engine Models
+// ----------------------------------------------------------------------
+
+model QuestionBank {
+  id           String           @id @default(uuid())
+  courseId     String
+  questionText String
+  type         String           @default("MCQ") // MCQ, MULTIPLE_CORRECT, TRUE_FALSE
+  difficulty   String           @default("MEDIUM")
+  marks        Float            @default(1.0)
+  negativeMarks Float           @default(0.0)
+  createdBy    String
+  createdAt    DateTime         @default(now())
+
+  options      QuestionOption[]
+  activeLinked QuizQuestion[]
+  analytics    QuestionAnalytics?
+}
+
+model QuestionOption {
+  id           String       @id @default(uuid())
+  questionId   String
+  optionText   String
+  isCorrect    Boolean      @default(false)
+
+  question     QuestionBank  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id          String         @id @default(uuid())
+  title       String
+  courseId    String
+  duration    Int            // In minutes
+  totalMarks  Float          @default(0)
+  status      String         @default("DRAFT") // DRAFT, READY, STARTED, ENDED
+  securityLevel String       @default("HIGH")
+  leaderboardGenerated Boolean @default(false)
+  startTime   DateTime?
+  endTime     DateTime?
+  createdBy   String
+  allowLate   Boolean        @default(false)
+  shuffleQuestions Boolean   @default(true)
+  shuffleOptions   Boolean   @default(true)
+  maxAttempts Int            @default(1)
+  createdAt   DateTime       @default(now())
+
+  questions   QuizQuestion[]
+  submissions QuizSubmission[]
+  violations  ViolationLog[]
+  leaderboard LeaderboardCache[]
+  analytics   QuizAnalytics?
+}
+
+model QuizQuestion {
+  id          String       @id @default(uuid())
+  quizId      String
+  questionId  String
+  orderIndex  Int          @default(0)
+
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question    QuestionBank @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, questionId])
+}
+
+model QuizSubmission {
+  id          String       @id @default(uuid())
+  quizId      String
+  studentId   String
+  startedAt   DateTime     @default(now())
+  submittedAt DateTime?
+  score       Float?
+  percentage  Float?
+  violations  Int          @default(0)
+  isAutoSubmit Boolean     @default(false)
+  status      String       @default("IN_PROGRESS")
+  grade       String?
+  terminationReason String?
+  attemptMode String       @default("NORMAL")
+  analyticsProcessed Boolean @default(false)
+
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers     QuizAnswer[]
+
+  @@unique([quizId, studentId])
+}
+
+model QuizAnswer {
+  id            String         @id @default(uuid())
+  submissionId  String
+  questionId    String
+  selectedOption String?
+  isCorrect      Boolean        @default(false)
+  marksObtained  Float          @default(0.0)
+
+  submission    QuizSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+model ViolationLog {
+  id          String    @id @default(uuid())
+  studentId   String
+  quizId      String
+  type        String    // TAB_SWITCH, FULLSCREEN_EXIT, COPY_PASTE
+  timestamp   DateTime  @default(now())
+  severity    String    @default("LOW")
+
+  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model LeaderboardCache {
+  id          String    @id @default(uuid())
+  quizId      String
+  studentId   String
+  score       Float
+  timeTaken   Int       // seconds
+  rank        Int
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@unique([quizId, studentId])
+}
+
+model QuizAnalytics {
+  id          String   @id @default(uuid())
+  quizId      String   @unique
+  avgScore    Float    @default(0)
+  highestScore Float   @default(0)
+  lowestScore Float    @default(0)
+  passRate    Float    @default(0)
+  failRate    Float    @default(0)
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuestionAnalytics {
+  id              String   @id @default(uuid())
+  questionId      String   @unique
+  totalAttempts   Int      @default(0)
+  correctAttempts Int      @default(0)
+  difficultyIndex Float    @default(0) // represented as 0.25 for 25%
+  updatedAt       DateTime @default(now()) @updatedAt
+
+  question        QuestionBank @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}

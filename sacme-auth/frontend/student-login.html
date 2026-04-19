@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#f4f2fe] to-[#eaddf8] min-h-screen overflow-x-hidden flex items-center justify-center p-4 antialiased sm:p-6 lg:p-8">
+    
+    <div class="w-full max-w-md bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 p-8 md:p-12">
+        
+        <a href="role-selection.html" class="inline-flex items-center text-gray-400 hover:text-gray-800 mb-8 transition-colors text-sm min-h-[50px]">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back
+        </a>
+
+        <div class="mb-10 text-center">
+            <div class="w-20 h-20 bg-pink-50 rounded-full mx-auto mb-6 flex items-center justify-center text-pink-500">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
+            </div>
+            <h3 class="text-3xl font-bold text-gray-900 mb-2">Student Login</h3>
+            <p class="text-sm text-gray-500">Access your academic timeline.</p>
+        </div>
+
+        <form class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number</label>
+                <input type="text" placeholder="e.g. 21BCE0001" class="w-full min-h-[50px] px-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none text-gray-800 placeholder-gray-400">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                    <select class="w-full min-h-[50px] px-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none text-gray-800 appearance-none">
+                        <option value="">Select Year</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                    <select class="w-full min-h-[50px] px-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all outline-none text-gray-800 appearance-none">
+                        <option value="">Select Sem</option>
+                        <option value="1">Sem 1</option>
+                        <option value="2">Sem 2</option>
+                        <option value="3">Sem 3</option>
+                        <option value="4">Sem 4</option>
+                        <option value="5">Sem 5</option>
+                        <option value="6">Sem 6</option>
+                        <option value="7">Sem 7</option>
+                        <option value="8">Sem 8</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="button" class="w-full min-h-[50px] bg-pink-600 hover:bg-pink-700 text-white rounded-2xl font-semibold mt-6 transition-all hover:shadow-lg hover:shadow-pink-500/30 flex items-center justify-center">
+                Login
+            </button>
+        </form>
+        
+        <p class="mt-8 text-center text-xs text-gray-400 px-4 leading-relaxed">
+            Facing issues? Contact your Faculty Advisor. <br/> No open registration is allowed in SACME.
+        </p>
+    </div>
+</body>
+</html>

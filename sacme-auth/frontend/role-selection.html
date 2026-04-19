@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SACME | Select Role Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #eaddf8;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+        
+        /* Custom scrollbar for inner containers */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark-glass {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="flex h-screen w-full overflow-hidden antialiased text-gray-800">
+
+    <!-- Heavy UI Sidebar (Dark Mode styling matching reference image vibes) -->
+    <aside class="w-20 md:w-64 flex-shrink-0 dark-glass text-white flex flex-col justify-between py-6 transition-all duration-300 z-20">
+        <div>
+            <!-- Logo Area -->
+            <div class="px-0 md:px-6 flex justify-center md:justify-start items-center mb-10">
+                <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30 flex-shrink-0">
+                    S
+                </div>
+                <span class="ml-3 font-bold text-xl tracking-wide hidden md:block">SACME<span class="text-indigo-400">.co</span></span>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-2 px-3">
+                <a href="#" class="flex items-center px-3 py-3 rounded-xl bg-white/10 text-white group cursor-pointer">
+                    <svg class="w-6 h-6 flex-shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="ml-3 font-medium hidden md:block">Authentication</span>
+                </a>
+                
+                <a href="#admin-login" class="flex items-center px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors group">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <span class="ml-3 font-medium hidden md:block">Admin Portal</span>
+                </a>
+                
+                <a href="index.html" class="flex items-center px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors group">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="ml-3 font-medium hidden md:block">Back to Site</span>
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Bottom Settings Link -->
+        <div class="px-3">
+             <a href="#" class="flex items-center px-3 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors group">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span class="ml-3 font-medium hidden md:block">System Status</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area Wrapper -->
+    <main class="flex-1 flex flex-col p-4 md:p-8 overflow-y-auto relative z-10">
+        
+        <!-- Dashboard Top Navigation Bar -->
+        <header class="w-full glass-panel rounded-2xl flex items-center justify-between p-4 mb-8">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800 ml-2">Identity Hub > Role Selection</h1>
+            
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Placeholder -->
+                <div class="hidden sm:flex bg-gray-100 p-1 rounded-full items-center">
+                    <button class="p-2 rounded-full text-gray-500 hover:bg-white hover:shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg></button>
+                    <button class="p-2 rounded-full bg-white shadow-sm text-yellow-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></button>
+                </div>
+                
+                <button class="p-2 md:p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+                <button class="p-2 md:p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 relative transition-colors">
+                    <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+                <div class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 border-2 border-white shadow-sm flex items-center justify-center text-white font-bold">
+                    ?
+                </div>
+            </div>
+        </header>
+
+        <!-- Heavy Dashboard Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
+            
+            <!-- Left Banner Widget (Mimicking premium hero element) -->
+            <div class="lg:col-span-3 xl:col-span-4 glass-panel rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-white/90 to-indigo-50/90 relative overflow-hidden h-[300px]">
+                
+                 <!-- Decorative abstract shape -->
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-indigo-200/40 to-purple-400/20 rounded-full blur-3xl"></div>
+                <div class="absolute right-40 -bottom-20 w-60 h-60 bg-gradient-to-br from-pink-200/40 to-yellow-200/20 rounded-full blur-3xl"></div>
+
+                <div class="max-w-xl relative z-10 w-full">
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs mb-4 uppercase tracking-wider">Access Control</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight leading-tight">Identity Verification Gateway</h2>
+                    <p class="text-gray-500 text-lg">No open registration is permitted. Select your assigned institutional role to proceed with pre-registered verification.</p>
+                </div>
+                
+                <div class="hidden md:flex flex-col bg-white/60 p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10 w-80 h-full justify-center">
+                   <h4 class="font-bold text-gray-800 mb-2">Network Status</h4>
+                   <div class="flex items-center gap-3 mb-4">
+                        <span class="relative flex h-4 w-4">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+                        </span>
+                        <span class="text-gray-600 font-medium font-mono text-sm">Secure Connection</span>
+                   </div>
+                   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                      <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 100%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 text-right w-full block">Database Sync Active</span>
+                </div>
+            </div>
+
+            <!-- Role Selection Cards styled as Heavy Widgets -->
+            <div class="glass-panel rounded-3xl p-6 group cursor-pointer hover:shadow-xl hover:shadow-indigo-500/10 transition-all border border-transparent hover:border-indigo-100 flex flex-col h-[350px] relative overflow-hidden" onclick="window.location.href='faculty-signup.html'">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+                <div class="flex justify-between items-start mb-auto">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <span class="text-gray-300 group-hover:text-indigo-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+                </div>
+                <div class="mt-8">
+                    <div class="flex justify-between items-end mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900 leading-none">Faculty Advisor</h3>
+                    </div>
+                    <p class="text-gray-500 mt-3 font-medium">Departmental Head & Institute Level Admins. Responsible for term setup.</p>
+                </div>
+                <!-- Mock Chart Element inside card -->
+                <div class="w-full mt-6 h-16 flex items-end gap-1 opacity-60">
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-1/4 group-hover:bg-indigo-400 transition-colors duration-200"></div>
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-2/4 group-hover:bg-indigo-400 transition-colors duration-300"></div>
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-3/4 group-hover:bg-indigo-500 transition-colors duration-500"></div>
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-full group-hover:bg-indigo-600 transition-colors duration-700"></div>
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-2/4 group-hover:bg-indigo-500 transition-colors duration-500"></div>
+                    <div class="w-1/6 bg-indigo-200 rounded-t-sm h-1/4 group-hover:bg-indigo-400 transition-colors duration-200"></div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 group cursor-pointer hover:shadow-xl hover:shadow-purple-500/10 transition-all border border-transparent hover:border-purple-100 flex flex-col h-[350px] relative overflow-hidden" onclick="window.location.href='professor-signup.html'">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+                <div class="flex justify-between items-start mb-auto">
+                    <div class="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span class="text-gray-300 group-hover:text-purple-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+                </div>
+                <div class="mt-8">
+                    <div class="flex justify-between items-end mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900 leading-none">Professor</h3>
+                    </div>
+                    <p class="text-gray-500 mt-3 font-medium">Course Instructors & Lecturers. Manage assignments and student marks.</p>
+                </div>
+                 <!-- Mock Scatter/Dots Chart Element -->
+                 <div class="w-full mt-6 h-16 relative opacity-60">
+                    <div class="absolute w-3 h-3 rounded-full bg-purple-300 group-hover:bg-purple-500 transition-colors duration-300 top-[20%] left-[10%]"></div>
+                    <div class="absolute w-4 h-4 rounded-full bg-purple-200 group-hover:bg-purple-600 transition-colors duration-500 top-[60%] left-[30%]"></div>
+                    <div class="absolute w-2 h-2 rounded-full bg-purple-400 group-hover:bg-purple-400 transition-colors duration-200 top-[30%] left-[50%]"></div>
+                    <div class="absolute w-5 h-5 rounded-full bg-purple-300 group-hover:bg-purple-700 transition-colors duration-700 top-[10%] left-[70%]"></div>
+                    <div class="absolute w-3 h-3 rounded-full bg-purple-200 group-hover:bg-purple-500 transition-colors duration-400 top-[70%] left-[85%]"></div>
+                 </div>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-6 group cursor-pointer hover:shadow-xl hover:shadow-pink-500/10 transition-all border border-transparent hover:border-pink-100 flex flex-col h-[350px] relative overflow-hidden" onclick="window.location.href='student-login.html'">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-pink-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+                <div class="flex justify-between items-start mb-auto">
+                    <div class="w-16 h-16 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-inner">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                    </div>
+                    <span class="text-gray-300 group-hover:text-pink-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path></svg></span>
+                </div>
+                <div class="mt-8">
+                    <div class="flex justify-between items-end mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900 leading-none">Student</h3>
+                    </div>
+                    <p class="text-gray-500 mt-3 font-medium">Academic End-Users. Access courses, view grades, and daily schedules.</p>
+                </div>
+                <!-- Mock Donut Chart Element -->
+                <div class="w-full mt-6 h-16 flex justify-end items-end opacity-60">
+                   <div class="w-16 h-16 rounded-full border-4 border-pink-100 border-t-pink-200 border-r-pink-300 group-hover:border-t-pink-400 group-hover:border-r-pink-500 group-hover:rotate-180 transition-all duration-1000 flex items-center justify-center">
+                       <span class="w-10 h-10 bg-white rounded-full"></span>
+                   </div>
+                </div>
+            </div>
+
+            <!-- Notice / Information Widget -->
+            <div class="glass-panel rounded-3xl p-6 flex flex-col justify-between h-[350px] relative overflow-hidden bg-gray-50/50">
+                <div>
+                   <div class="flex items-center gap-2 text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full w-max text-sm font-semibold mb-6">
+                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                       Important Notice
+                   </div>
+                   <h3 class="font-bold text-gray-800 text-xl mb-3">Zero Open Registration</h3>
+                   <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                       SACME employs rigorous Role-Based Access Control (RBAC). No public invitations are allowed. 
+                       Users must be explicitly pre-registered by authorized administrators into the `FacultyAdvisors`, `Professors`, or `Students` tables.
+                   </p>
+                </div>
+                
+                <a href="#admin-login" class="mt-auto w-full bg-gray-900 hover:bg-black text-white rounded-2xl py-4 flex items-center justify-center gap-2 font-semibold transition-colors min-h-[50px]">
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                   Root Admin Override
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

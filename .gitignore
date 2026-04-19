@@ -1,0 +1,16 @@
+# Root gitignore for Capstone project
+node_modules/
+.env
+.env.local
+.env.*.local
+.next/
+dist/
+build/
+.DS_Store
+*.log
+*.db
+!prisma/dev.db # Optional: Keep the dev.db if needed, but usually better to ignore it. 
+# User's project has many backups, let's ignore all .db files
+*.db-journal
+*.db-shm
+*.db-wal
