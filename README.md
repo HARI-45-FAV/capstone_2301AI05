@@ -136,7 +136,7 @@ The platform supports a complete academic lifecycle — from institute onboardin
 
 
 ```
-<img width="554" height="572" alt="image" src="https://github.com/user-attachments/assets/fb020e0f-3284-4886-8892-01e370054fb0" />
+<img width="992" height="1024" alt="image" src="https://github.com/user-attachments/assets/b31887bb-a034-4602-93d2-64b693bdf373" />
 
 
 ### Directory Structure
