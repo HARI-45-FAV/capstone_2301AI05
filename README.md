@@ -103,7 +103,7 @@ The platform supports a complete academic lifecycle — from institute onboardin
 ## 3. System Architecture
 
 
-<img width="496" height="512" alt="image" src="https://github.com/user-attachments/assets/b31887bb-a034-4602-93d2-64b693bdf373" />
+<img width="542" height="676" alt="image" src="https://github.com/user-attachments/assets/1968903c-adfb-4ef2-950b-a0420134fa45" />
 
 
 ### Directory Structure
