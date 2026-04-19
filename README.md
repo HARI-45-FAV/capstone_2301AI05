@@ -133,6 +133,9 @@ The platform supports a complete academic lifecycle — from institute onboardin
 │  │     Nodemailer  →  Gmail SMTP        │                  │
 │  └───────────────────────────────────────┘                 │
 └─────────────────────────────────────────────────────────────┘
+
+<img width="554" height="572" alt="image" src="https://github.com/user-attachments/assets/fb020e0f-3284-4886-8892-01e370054fb0" />
+
 ```
 
 ### Directory Structure
